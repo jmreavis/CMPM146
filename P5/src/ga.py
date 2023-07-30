@@ -51,6 +51,7 @@ class Individual_Grid(object):
             emptyPercentage=0.6,
             linearity=-0.5,
             solvability=2.0
+            # Maybe a metric for enemy density either overall or in relation to powerups/other world objects
         )
         self._fitness = sum(map(lambda m: coefficients[m] * measurements[m],
                                 coefficients))
@@ -339,7 +340,7 @@ class Individual_DE(object):
         ]) for i in range(elt_count)]
         return Individual_DE(g)
 
-
+#Change to Individual_DE to switch encodings
 Individual = Individual_Grid
 
 
