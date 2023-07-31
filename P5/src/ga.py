@@ -72,25 +72,45 @@ class Individual_Grid(object):
 
         left = 1
         right = width - 1
-        for y in range(height):
+        for y in range(1, height):
             for x in range(left, right):
-                pass
+                if self[x][y] == "X":
+                    alternatives = ["-", "X"]
+                    self[x][y] = alternatives[random.randint(0, 1)]
+                elif self[x][y] == "?" or self[x][y] == "M" or self[x][y] == "B":
+                    alternatives = ["?", "M", "B"]
+                    self[x][y] = alternatives[random.randint(0, 2)]
+                elif self[x][y] == "o":
+                    alternatives = ["o", "B"]
+                    self[x][y] = alternatives[random.randint(0, 1)]
+
         return genome
 
     # Create zero or more children from self and other
     def generate_children(self, other):
         new_genome = copy.deepcopy(self.genome)
         # Leaving first and last columns alone...
-        # do crossover with other
+        # do crossover with other (uniform)
         left = 1
         right = width - 1
+        child1 = []
+        child2 = []
+
         for y in range(height):
             for x in range(left, right):
+                if random.random() < 0.5:
+                    child1.append(self)
+                    child2.append(other)
+                else:
+                    child1.append(other)
+                    child2.append(self)
+
+        new_genome.append(child1, child2)
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
-                pass
         # do mutation; note we're returning a one-element tuple here
-        #mutate(new_genome)
+
+        new_genome.mutate()
         return (Individual_Grid(new_genome),)
 
     # Turn the genome into a level string (easy for this genome)
@@ -347,22 +367,25 @@ Individual = Individual_Grid
 
 def roulette_selection(population):
     # Calculate each individual's fitness
-    fitness_scores = [level.calculate_fitness for level in population]
+    fitness_scores = [level.calculate_fitness() for level in population]
 
+    total_fitness = 0
     # Sum up the fitnesses
-    total_fitness = sum(fitness_scores)
+    for level in fitness_scores:
+        total_fitness += level.fitness()
 
     # Calculate probability based on individual fitness compared to the total fitness
-    probabilities = [fitness / total_fitness for fitness in fitness_scores]
+    probabilities = [level.fitness() / total_fitness for level in fitness_scores]
 
     # Returns the individual with the highest fitness
-    return random.choices(population, weights=probabilities)
+    #return random.choice(population, weights=probabilities)
+    return random.choice(population)
 
 
 
 def tournament_selection(population):  
     participants = random.sample(population, random.randint(2, len(population)))
-    winner = max(participants, key=lambda level: level.fitness)
+    winner = max(participants, key=lambda level: level.fitness())
     
     return winner
 
@@ -373,8 +396,7 @@ def generate_successors(population):
     for num in range(sample_size):
         winner1 = roulette_selection(population)
         winner2 = tournament_selection(population)
-        results.append(winner1.generate_children())
-        results.append(winner2.generate_children())
+        results.append(winner1.generate_children(winner2))
     
     # STUDENT Design and implement this
     # Hint: Call generate_children() on some individuals and fill up results.
