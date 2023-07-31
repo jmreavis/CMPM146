@@ -41,7 +41,7 @@ class Individual_Grid(object):
     def calculate_fitness(self):
         measurements = metrics.metrics(self.to_level())
         # Print out the possible measurements or look at the implementation of metrics.py for other keys:
-        # print(measurements.keys())
+        #print(measurements.keys())
         # Default fitness function: Just some arbitrary combination of a few criteria.  Is it good?  Who knows?
         # STUDENT Modify this, and possibly add more metrics.  You can replace this with whatever code you like.
         coefficients = dict(
@@ -343,6 +343,13 @@ class Individual_DE(object):
 #Change to Individual_DE to switch encodings
 Individual = Individual_Grid
 
+def roulette_selection(population):
+    total_fitness = sum(population.fitness)
+    probabilities = [fitness / total_fitness for fitness in fitness_scores]
+    return random.choices(population, weights=probabilities, k=POPULATION_SIZE)
+
+def tournament_selection(population):
+    pass
 
 def generate_successors(population):
     results = []
