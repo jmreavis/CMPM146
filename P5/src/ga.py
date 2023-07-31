@@ -7,6 +7,7 @@ import random
 import shutil
 import time
 import math
+import numpy as rand
 
 width = 200
 height = 16
@@ -89,6 +90,7 @@ class Individual_Grid(object):
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
                 pass
         # do mutation; note we're returning a one-element tuple here
+        #mutate(new_genome)
         return (Individual_Grid(new_genome),)
 
     # Turn the genome into a level string (easy for this genome)
@@ -344,15 +346,36 @@ class Individual_DE(object):
 Individual = Individual_Grid
 
 def roulette_selection(population):
-    total_fitness = sum(population.fitness)
-    probabilities = [fitness / total_fitness for fitness in fitness_scores]
-    return random.choices(population, weights=probabilities, k=POPULATION_SIZE)
+    # Calculate each individual's fitness
+    fitness_scores = [level.calculate_fitness for level in population]
 
-def tournament_selection(population):
-    pass
+    # Sum up the fitnesses
+    total_fitness = sum(fitness_scores)
+
+    # Calculate probability based on individual fitness compared to the total fitness
+    probabilities = [fitness / total_fitness for fitness in fitness_scores]
+
+    # Returns the individual with the highest fitness
+    return random.choices(population, weights=probabilities)
+
+
+
+def tournament_selection(population):  
+    participants = random.sample(population, random.randint(2, len(population)))
+    winner = max(participants, key=lambda level: level.fitness)
+    
+    return winner
 
 def generate_successors(population):
     results = []
+
+    sample_size = 10
+    for num in range(sample_size):
+        winner1 = roulette_selection(population)
+        winner2 = tournament_selection(population)
+        results.append(winner1.generate_children())
+        results.append(winner2.generate_children())
+    
     # STUDENT Design and implement this
     # Hint: Call generate_children() on some individuals and fill up results.
     return results
