@@ -52,7 +52,6 @@ class Individual_Grid(object):
             emptyPercentage=0.6,
             linearity=-0.5,
             solvability=2.0
-            # Maybe a metric for enemy density either overall or in relation to powerups/other world objects
         )
         self._fitness = sum(map(lambda m: coefficients[m] * measurements[m],
                                 coefficients))
@@ -397,7 +396,7 @@ def tournament_selection(population):
 def generate_successors(population):
     results = []
 
-    sample_size = 1
+    sample_size = 10
     for num in range(sample_size):
         winner1 = roulette_selection(population)
         winner2 = tournament_selection(population)
