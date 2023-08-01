@@ -72,45 +72,50 @@ class Individual_Grid(object):
 
         left = 1
         right = width - 1
-        for y in range(1, height):
-            for x in range(left, right):
-                if self[x][y] == "X":
+        for x in range(1, height):
+            for y in range(left, right):
+                if genome[x][y] == "X":
                     alternatives = ["-", "X"]
-                    self[x][y] = alternatives[random.randint(0, 1)]
-                elif self[x][y] == "?" or self[x][y] == "M" or self[x][y] == "B":
+                    genome[x][y] = alternatives[random.randint(0, 1)]
+                elif genome[x][y] == "?" or genome[x][y] == "M" or genome[x][y] == "B":
                     alternatives = ["?", "M", "B"]
-                    self[x][y] = alternatives[random.randint(0, 2)]
-                elif self[x][y] == "o":
+                    genome[x][y] = alternatives[random.randint(0, 2)]
+                elif genome[x][y] == "o":
                     alternatives = ["o", "B"]
-                    self[x][y] = alternatives[random.randint(0, 1)]
+                    genome[x][y] = alternatives[random.randint(0, 1)]
 
         return genome
 
     # Create zero or more children from self and other
     def generate_children(self, other):
-        new_genome = copy.deepcopy(self.genome)
+        first_genome = copy.deepcopy(self.genome)
+        second_genome = copy.deepcopy(other.genome)
         # Leaving first and last columns alone...
         # do crossover with other (uniform)
         left = 1
         right = width - 1
-        child1 = []
-        child2 = []
+        #x = 1 - 199
+        child1 = copy.deepcopy(self.genome)
+        child2 = copy.deepcopy(self.genome)
 
-        for y in range(height):
-            for x in range(left, right):
+        for x in range(height):
+            for y in range(left, right):
                 if random.random() < 0.5:
-                    child1.append(self)
-                    child2.append(other)
+                    print("X: ", x)
+                    print("Y: ", y)
+                    child1[x][y] = first_genome[x][y]
+                    child2[x][y] = second_genome[x][y]
                 else:
-                    child1.append(other)
-                    child2.append(self)
+                    print("X2: ", x)
+                    print("Y: ", y)
+                    child1[x][y] = second_genome[x][y]
+                    child2[x][y] = first_genome[x][y]
 
-        new_genome.append(child1, child2)
+        new_genome = self.mutate(child1)
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
         # do mutation; note we're returning a one-element tuple here
 
-        new_genome.mutate()
         return (Individual_Grid(new_genome),)
 
     # Turn the genome into a level string (easy for this genome)
@@ -392,11 +397,12 @@ def tournament_selection(population):
 def generate_successors(population):
     results = []
 
-    sample_size = 10
+    sample_size = 1
     for num in range(sample_size):
         winner1 = roulette_selection(population)
         winner2 = tournament_selection(population)
-        results.append(winner1.generate_children(winner2))
+        child = winner1.generate_children(winner2)
+        results.append(child[0])
     
     # STUDENT Design and implement this
     # Hint: Call generate_children() on some individuals and fill up results.
