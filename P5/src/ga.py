@@ -72,7 +72,7 @@ class Individual_Grid(object):
 
         #STABLE
         left = 0
-        right = width - 1
+        right = width - 3
         for x in range(0, 13):
             for y in range(left, right):
                 if genome[x][y] == "X": 
@@ -101,7 +101,7 @@ class Individual_Grid(object):
         # Leaving first and last columns alone...
         # do crossover with other (uniform)
         left = 1
-        right = width - 1
+        right = width - 3
         #x = 1 - 199
         child1 = copy.deepcopy(self.genome)
         child2 = copy.deepcopy(self.genome)
@@ -115,10 +115,6 @@ class Individual_Grid(object):
                     child1[x][y] = second_genome[x][y]
                     child2[x][y] = first_genome[x][y]
         new_genome = self.mutate(child1)
-        #guaranteeing a flagpole
-        new_genome[7][-1] = "v"
-        new_genome[8:14][-1] = ["f"] * 6
-        new_genome[14:16][-1] = ["X", "X"]
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
         # do mutation; note we're returning a one-element tuple here
@@ -152,15 +148,15 @@ class Individual_Grid(object):
         g[14][0] = "m"
         g[14][1:] = ["-"] * (width - 1)
         g[13][:] = ["-"] * width
-        g[7][199] = "v"
-        g[8][199] = "f"
-        g[9][199] = "f"
-        g[10][199] = "f"
-        g[11][199] = "f"
-        g[12][199] = "f"
-        g[13][199] = "f"
-        g[14][199] = "X"
-        g[15][199] = "X"
+        g[7][197] = "v"
+        g[8][197] = "f"
+        g[9][197] = "f"
+        g[10][197] = "f"
+        g[11][197] = "f"
+        g[12][197] = "f"
+        g[13][197] = "f"
+        g[14][197] = "X"
+        g[15][197] = "X"
         return cls(g)
 
 
@@ -489,7 +485,7 @@ if __name__ == "__main__":
     print("Best fitness: " + str(best.fitness()))
     now = time.strftime("%m_%d_%H_%M_%S")
     # STUDENT You can change this if you want to blast out the whole generation, or ten random samples, or...
-    for k in range(0, 10):
-        with open("levels/" + now + "_" + str(k) + ".txt", 'w') as f:
-            for row in final_gen[k].to_level():
-                f.write("".join(row) + "\n")
+    # for k in range(0, 10):
+    #     with open("levels/" + now + "_" + str(k) + ".txt", 'w') as f:
+    #         for row in final_gen[k].to_level():
+    #             f.write("".join(row) + "\n")
