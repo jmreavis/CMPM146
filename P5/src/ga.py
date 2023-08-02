@@ -71,9 +71,9 @@ class Individual_Grid(object):
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
 
         #STABLE
-        left = 1
+        left = 0
         right = width - 1
-        for x in range(4, height):
+        for x in range(0, 13):
             for y in range(left, right):
                 if genome[x][y] == "X": 
                     # alternatives = ["-", "X"]
@@ -87,7 +87,10 @@ class Individual_Grid(object):
                     alternatives = ["o", "B"]
                     genome[x][y] = alternatives[random.randint(0, 1)]
                     #pass
+                elif genome[x][y] == "E":
+                    genome[x][y] = "-"
         #STABLE
+        #print(genome)
         
         return genome
 
@@ -103,20 +106,19 @@ class Individual_Grid(object):
         child1 = copy.deepcopy(self.genome)
         child2 = copy.deepcopy(self.genome)
 
-        for x in range(height):
+        for x in range(0, 13):
             for y in range(left, right):
                 if random.random() < 0.5:
-                    print("X: ", x)
-                    print("Y: ", y)
                     child1[x][y] = first_genome[x][y]
                     child2[x][y] = second_genome[x][y]
                 else:
-                    print("X2: ", x)
-                    print("Y: ", y)
                     child1[x][y] = second_genome[x][y]
                     child2[x][y] = first_genome[x][y]
-
         new_genome = self.mutate(child1)
+        #guaranteeing a flagpole
+        new_genome[7][-1] = "v"
+        new_genome[8:14][-1] = ["f"] * 6
+        new_genome[14:16][-1] = ["X", "X"]
                 # STUDENT Which one should you take?  Self, or other?  Why?
                 # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
         # do mutation; note we're returning a one-element tuple here
@@ -148,9 +150,17 @@ class Individual_Grid(object):
         g = [random.choices(options, k=width) for row in range(height)]
         g[15][:] = ["X"] * width
         g[14][0] = "m"
-        g[7][-1] = "v"
-        g[8:14][-1] = ["f"] * 6
-        g[14:16][-1] = ["X", "X"]
+        g[14][1:] = ["-"] * (width - 1)
+        g[13][:] = ["-"] * width
+        g[7][199] = "v"
+        g[8][199] = "f"
+        g[9][199] = "f"
+        g[10][199] = "f"
+        g[11][199] = "f"
+        g[12][199] = "f"
+        g[13][199] = "f"
+        g[14][199] = "X"
+        g[15][199] = "X"
         return cls(g)
 
 
@@ -402,7 +412,7 @@ def tournament_selection(population):
 def generate_successors(population):
     results = []
 
-    sample_size = 10
+    sample_size = 4
     for num in range(sample_size):
         winner1 = roulette_selection(population)
         winner2 = tournament_selection(population)
@@ -453,7 +463,7 @@ def ga():
                             f.write("".join(row) + "\n")
                 generation += 1
                 # STUDENT Determine stopping condition
-                stop_condition = False
+                stop_condition = generation > 10
                 if stop_condition:
                     break
                 # STUDENT Also consider using FI-2POP as in the Sorenson & Pasquier paper
