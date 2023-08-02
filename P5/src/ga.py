@@ -51,7 +51,8 @@ class Individual_Grid(object):
             pathPercentage=0.5,
             emptyPercentage=0.6,
             linearity=-0.5,
-            solvability=2.0
+            solvability=2.0,
+            leniency = 0.2
         )
         self._fitness = sum(map(lambda m: coefficients[m] * measurements[m],
                                 coefficients))
@@ -69,20 +70,25 @@ class Individual_Grid(object):
         # STUDENT also consider weighting the different tile types so it's not uniformly random
         # STUDENT consider putting more constraints on this to prevent pipes in the air, etc
 
+        #STABLE
         left = 1
         right = width - 1
-        for x in range(1, height):
+        for x in range(4, height):
             for y in range(left, right):
-                if genome[x][y] == "X":
-                    alternatives = ["-", "X"]
-                    genome[x][y] = alternatives[random.randint(0, 1)]
+                if genome[x][y] == "X": 
+                    # alternatives = ["-", "X"]
+                    # genome[x][y] = alternatives[random.randint(0, 1)]
+                    pass
                 elif genome[x][y] == "?" or genome[x][y] == "M" or genome[x][y] == "B":
                     alternatives = ["?", "M", "B"]
                     genome[x][y] = alternatives[random.randint(0, 2)]
+                    #pass
                 elif genome[x][y] == "o":
                     alternatives = ["o", "B"]
                     genome[x][y] = alternatives[random.randint(0, 1)]
-
+                    #pass
+        #STABLE
+        
         return genome
 
     # Create zero or more children from self and other
